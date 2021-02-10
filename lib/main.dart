@@ -119,20 +119,11 @@ class _NewsListState extends State<NewsList> {
 }
 
 class StartupMenu extends StatefulWidget {
-  List<String> selected;
-
   @override
   _StartupMenuState createState() => _StartupMenuState();
 }
 
 class _StartupMenuState extends State<StartupMenu> {
-  void _apply() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String topics = pref.getString("topics");
-    print(topics);
-    await pref.setString("topics", "test");
-  }
-
   @override
   Widget build(BuildContext context) {
     Size deviceDimensions = MediaQuery.of(context).size;
@@ -198,11 +189,24 @@ class TopicForm extends StatefulWidget {
       topic: "Tech",
     ),
   ];
+
   @override
   TopicFormState createState() => TopicFormState();
 }
 
 class TopicFormState extends State<TopicForm> {
+  void _apply() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String topics = pref.getString("topics");
+    print("topics: " + topics);
+    Map<String, bool> payload = {};
+    widget.arr.forEach((element) {
+      payload[element.topic] = element.value;
+    });
+    print("payload: " + payload.toString());
+    await pref.setString("topics", payload.toString());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -211,7 +215,7 @@ class TopicFormState extends State<TopicForm> {
         Spacer(),
         FlatButton(
           onPressed: () {
-            print(widget.arr[0].value);
+            _apply();
           },
           child: Text("Done"),
           color: Colors.blue,
